@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爱心粒子动画</title>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+    body {
+    background: linear-gradient(135deg, #0c0e1a, #1c1939, #2a235e);
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+    .container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+    .header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 0 20px;
+}
+
+    h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: 12px;
+    background: linear-gradient(45deg, #ff7eb9, #ff758c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1.5px;
+}
+
+    .subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: #d0c9e9;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+    canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+    #heartCanvas {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 0 15px rgba(255, 117, 140, 0.5));
+}
+
+    .info-panel {
+    background: rgba(25, 24, 49, 0.7);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    max-width: 500px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+    .info-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #ff7eb9;
+    text-align: center;
+}
+
+    .stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+    .stat-item {
+    text-align: center;
+    padding: 8px 20px;
+    background: rgba(255, 126, 185, 0.15);
+    border-radius: 12px;
+    margin: 8px;
+    min-width: 120px;
+}
+
+    .stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff7eb9;
+}
+
+    .stat-label {
+    font-size: 0.9rem;
+    color: #c5b6f9;
+}
+
+    .controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+    button {
+    background: rgba(255, 126, 185, 0.25);
+    border: 1px solid rgba(255, 126, 185, 0.5);
+    color: #ffffff;
+    padding: 10px 22px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    button:hover {
+    background: rgba(255, 126, 185, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
+}
+
+    .icon {
+    font-size: 1.2rem;
+}
+
+    .footer {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    z-index: 20;
+    padding: 0 20px;
+}
+
+    .gradient-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255, 117, 140, 0.15), transparent 70%);
+    z-index: 1;
+    opacity: 0.7;
+}
+
+    @media (max-width: 768px) {
+    .container {
+    transform: scale(0.95);
+}
+
+    .controls {
+    flex-direction: column;
+    align-items: center;
+}
+
+    button {
+    width: 80%;
+    justify-content: center;
+}
+
+    .stats {
+    flex-direction: column;
+    align-items: center;
+}
+}
+</style>
+</head>
+<body>
+<div class="gradient-bg"></div>
+<canvas id="bgCanvas"></canvas>
+<div class="container">
+    <div class="header">
+        <h1>粒子爱心动画</h1>
+        <p class="subtitle">基于笛卡尔坐标系方程，使用密度渐变粒子群构建的跳动爱心效果</p>
+    </div>
+    <canvas id="heartCanvas"></canvas>
+
+    <div class="info-panel">
+        <div class="info-title">动画参数</div>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="particle-count">2000</div>
+                <div class="stat-label">粒子数量</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="heartbeat">68</div>
+                <div class="stat-label">心跳速率</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="density-factor">8.5</div>
+                <div class="stat-label">密度因子</div>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="densityUp">
+                <span class="icon">+</span> 增加密度
+            </button>
+            <button id="densityDown">
+                <span class="icon">-</span> 减少密度
+            </button>
+            <button id="pauseBtn">
+                <span class="icon">⏸</span> 暂停/继续
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    笛卡尔心形曲线方程：x = 16sin³(t), y = 13cos(t) - 5cos(2t) - 2cos(3t) - cos(4t)
+</div>
+
+<script>
+    // 背景画布
+    const bgCanvas = document.getElementById('bgCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
+
+    // 爱心画布
+    const heartCanvas = document.getElementById('heartCanvas');
+    const ctx = heartCanvas.getContext('2d');
+
+    // 调整画布大小
+    function resizeCanvas() {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+    heartCanvas.width = window.innerWidth;
+    heartCanvas.height = window.innerHeight;
+}
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // 背景星星
+    class Star {
+    constructor() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.2;
+    this.speed = Math.random() * 0.5 + 0.1;
+    this.alpha = Math.random() * 0.5 + 0.3;
+    this.hue = 330 + Math.random() * 15;
+    this.twinkleSpeed = Math.random() * 0.03;
+}
+
+    update() {
+    this.y += this.speed;
+    if (this.y > bgCanvas.height) {
+    this.y = 0;
+    this.x = Math.random() * bgCanvas.width;
+}
+
+    this.alpha = 0.3 + Math.sin(Date.now() * this.twinkleSpeed) * 0.4;
+}
+
+    draw() {
+    bgCtx.fillStyle = `hsla(${this.hue}, 100%, 85%, ${this.alpha})`;
+    bgCtx.beginPath();
+    bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    bgCtx.fill();
+}
+}
+
+    // 创建星星
+    const stars = [];
+    for (let i = 0; i < 200; i++) {
+    stars.push(new Star());
+}
+
+    // 绘制背景
+    function drawBackground() {
+    // 清除画布
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+    // 绘制渐变背景
+    const gradient = bgCtx.createLinearGradient(
+    0, 0, bgCanvas.width, bgCanvas.height
+    );
+    gradient.addColorStop(0, '#0c0e1a');
+    gradient.addColorStop(1, '#2a235e');
+
+    bgCtx.fillStyle = gradient;
+    bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+    // 绘制径向高光
+    const radialGradient = bgCtx.createRadialGradient(
+    bgCanvas.width / 2, bgCanvas.height / 3 * 2, 0,
+    bgCanvas.width / 2, bgCanvas.height / 3 * 2, Math.min(bgCanvas.width, bgCanvas.height)
+    );
+    radialGradient.addColorStop(0, 'rgba(255, 126, 185, 0.1)');
+    radialGradient.addColorStop(1, 'transparent');
+    bgCtx.fillStyle = radialGradient;
+    bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+    // 更新并绘制星星
+    stars.forEach(star => {
+    star.update();
+    star.draw();
+});
+}
+
+    // 粒子系统参数
+    let particles = [];
+    const particleCountElement = document.getElementById('particle-count');
+    const heartbeatElement = document.getElementById('heartbeat');
+    const densityElement = document.getElementById('density-factor');
+
+    let particleCount = 2000; // 粒子数量
+    let beatScale = 1;
+    let beatDirection = 1;
+    let beatSpeed = 0.007;
+    let animationRunning = true;
+    let densityFactor = 8.5; // 控制曲线附近的粒子密度
+    let heartbeatRate = 68; // 模拟心率（每分钟）
+    let lastFrameTime = Date.now();
+    let heartColor = {
+    r: 255,
+    g: 126,
+    b: 185
+};
+
+    // 笛卡尔坐标爱心方程
+    function heartEquation(t) {
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+    return { x, y };
+}
+
+    // 生成粒子在爱心附近
+    function generateParticles() {
+    particles = [];
+
+    for (let i = 0; i < particleCount; i++) {
+    // 随机t值
+    const t = Math.random() * 2 * Math.PI;
+
+    // 获取爱心曲线上的点
+    const point = heartEquation(t);
+
+    // 计算粒子距离曲线的距离 - 使用指数分布实现密度变化
+    const distance = -Math.log(1 - Math.random()) / densityFactor;
+    const angle = Math.random() * 2 * Math.PI;
+
+    // 计算偏移坐标
+    const offsetX = Math.cos(angle) * distance;
+    const offsetY = Math.sin(angle) * distance;
+
+    // 粒子大小
+    const size = Math.random() * 2 + 1;
+
+    // 粒子颜色 (根据距离变化)
+    const distanceFactor = Math.max(0, 1 - distance * 0.5);
+    const r = heartColor.r * distanceFactor;
+    const g = heartColor.g * distanceFactor;
+    const b = heartColor.b * distanceFactor;
+    const a = 0.3 + 0.7 * Math.min(1, distanceFactor);
+
+    particles.push({
+    baseX: point.x,
+    baseY: point.y,
+    offsetX,
+    offsetY,
+    size,
+    r, g, b, a,
+    distance: distance
+});
+}
+}
+
+    // 绘制爱心粒子
+    function drawHeart() {
+    const centerX = heartCanvas.width / 2;
+    const centerY = heartCanvas.height / 2;
+    const scale = Math.min(heartCanvas.width, heartCanvas.height) / 30 * beatScale;
+
+    // 清除画布
+    ctx.clearRect(0, 0, heartCanvas.width, heartCanvas.height);
+
+    // 绘制粒子
+    particles.forEach(particle => {
+    const x = centerX + (particle.baseX + particle.offsetX * beatScale) * scale;
+    const y = centerY + (particle.baseY + particle.offsetY * beatScale) * scale;
+
+    ctx.beginPath();
+    ctx.arc(x, y, particle.size * beatScale, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${particle.r}, ${particle.g}, ${particle.b}, ${particle.a})`;
+    ctx.fill();
+});
+}
+
+    // 更新动画
+    function update() {
+    // 计算帧时间
+    const now = Date.now();
+    const deltaTime = (now - lastFrameTime) / 1000;
+    lastFrameTime = now;
+
+    // 模拟心跳
+    heartbeatRate = 60 + Math.sin(now * 0.001) * 4;
+    heartbeatElement.textContent = Math.round(heartbeatRate);
+
+    // 更新心跳缩放
+    beatScale += beatSpeed * beatDirection;
+
+    if (beatScale > 1.1) {
+    beatScale = 1.1;
+    beatDirection = -1;
+} else if (beatScale < 0.9) {
+    beatScale = 0.9;
+    beatDirection = 1;
+}
+}
+
+    // 动画循环
+    function animate() {
+    drawBackground();
+    update();
+    drawHeart();
+
+    if (animationRunning) {
+    requestAnimationFrame(animate);
+}
+}
+
+    // 初始化
+    generateParticles();
+
+    // 控制按钮
+    document.getElementById('pauseBtn').addEventListener('click', function() {
+    animationRunning = !animationRunning;
+    if (animationRunning) {
+    lastFrameTime = Date.now();
+    animate();
+}
+});
+
+    document.getElementById('densityUp').addEventListener('click', function() {
+    densityFactor = Math.min(densityFactor + 0.5, 20);
+    densityElement.textContent = densityFactor.toFixed(1);
+    generateParticles();
+});
+
+    document.getElementById('densityDown').addEventListener('click', function() {
+    densityFactor = Math.max(densityFactor - 0.5, 1);
+    densityElement.textContent = densityFactor.toFixed(1);
+    generateParticles();
+});
+
+    // 显示粒子数量
+    particleCountElement.textContent = particleCount;
+
+    // 初始显示
+    densityElement.textContent = densityFactor.toFixed(1);
+
+    // 开始动画
+    animate();
+</script>
+</body>
+</html>

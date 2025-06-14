@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Employee-System/Employee-System.iml" filepath="$PROJECT_DIR$/Employee-System/Employee-System.iml" />
+      <module fileurl="file://$PROJECT_DIR$/StoneMaze/StoneMaze.iml" filepath="$PROJECT_DIR$/StoneMaze/StoneMaze.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Study-Project.iml" filepath="$PROJECT_DIR$/Study-Project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day01-helloworld-app/day01-helloworld-app.iml" filepath="$PROJECT_DIR$/day01-helloworld-app/day01-helloworld-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day02-basic/day02-basic.iml" filepath="$PROJECT_DIR$/day02-basic/day02-basic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day03-flow-control/day03-flow-control.iml" filepath="$PROJECT_DIR$/day03-flow-control/day03-flow-control.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day04-array/day04-array.iml" filepath="$PROJECT_DIR$/day04-array/day04-array.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day05-oop/day05-oop.iml" filepath="$PROJECT_DIR$/day05-oop/day05-oop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day06-oop/day06-oop.iml" filepath="$PROJECT_DIR$/day06-oop/day06-oop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day07-demo/day07-demo.iml" filepath="$PROJECT_DIR$/day07-demo/day07-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day07-oop/day07-oop.iml" filepath="$PROJECT_DIR$/day07-oop/day07-oop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day08-GUI/day08-GUI.iml" filepath="$PROJECT_DIR$/day08-GUI/day08-GUI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/day08-oop/day08-oop.iml" filepath="$PROJECT_DIR$/day08-oop/day08-oop.iml" />
+    </modules>
+  </component>
+</project>

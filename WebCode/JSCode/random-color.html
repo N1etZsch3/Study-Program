@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<script>
+// 生成随机颜色的div
+function createRandomColorDiv() {
+    const div = document.createElement('div');
+    const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    div.style.backgroundColor = randomColor;
+    div.style.width = '100px';
+    div.style.height = '100px';
+    div.style.margin = '10px';
+    div.textContent = randomColor;
+    return div;
+}
+
+</script>
+</body>
+</html>
